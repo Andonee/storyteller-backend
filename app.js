@@ -4,6 +4,8 @@ const mapsRouters = require('./routes/maps-route')
 
 const app = express()
 
+app.use(express.json())
+
 app.use('/api/maps', mapsRouters)
 
 app.use((error, req, res, next) => {
