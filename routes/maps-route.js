@@ -1,5 +1,7 @@
 const express = require('express')
 
+const HttpError = require('../models/http-error')
+
 const router = express.Router()
 
 const DEMO_MAPS = [
@@ -30,9 +32,7 @@ router.get('/:mapId', (req, res, next) => {
 	})
 
 	if (!map) {
-		const error = new Error('Could not find map for privided id')
-		error.code = 404
-		return next(error)
+		return next(new HttpError('Could not find map for privided id', 404))
 	}
 
 	res.json({ map: map })
@@ -45,9 +45,7 @@ router.get('/user/:userId', (req, res, next) => {
 	})
 
 	if (!user) {
-		const error = new Error('Could not find map for privided user id')
-		error.code = 404
-		return next(error)
+		return next(new HttpError('Could not find map for privided user id', 404))
 	}
 
 	res.json({ user: user })
