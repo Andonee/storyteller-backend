@@ -74,10 +74,12 @@ const getMapsByUserId = (req, res, next) => {
 
 const createMap = (req, res) => {
 	// I need to prepare valid geojson structure in the front-end app and then pass it as "places" array
-	const { places } = req.body
+	const { places, title, description } = req.body
 	const createdMap = {
 		id: 'map2',
 		data: places,
+		title,
+		description,
 	}
 
 	DEMO_MAPS.push(createdMap)

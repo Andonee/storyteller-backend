@@ -1,7 +1,7 @@
 const express = require('express')
 
-const mapsRoutes = require('./routes/maps-route')
-const usersRoutes = require('./routes/users.route')
+const mapsRoutes = require('./routes/maps-routes')
+const usersRoutes = require('./routes/users-routes')
 const HttpError = require('./models/http-error')
 
 const app = express()
