@@ -1,13 +1,16 @@
 const express = require('express')
 
-const mapsRouters = require('./routes/maps-route')
+const mapsRoutes = require('./routes/maps-route')
+const usersRoutes = require('./routes/users.route')
 const HttpError = require('./models/http-error')
 
 const app = express()
 
 app.use(express.json())
 
-app.use('/api/maps', mapsRouters)
+app.use('/api/maps', mapsRoutes)
+
+app.use('/api/users', usersRoutes)
 
 app.use((res, req, next) => {
 	const error = new HttpError('invalid route', 404)
