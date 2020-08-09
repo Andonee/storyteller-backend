@@ -3,24 +3,45 @@ const HttpError = require('../models/http-error')
 const DEMO_MAPS = [
 	{
 		id: 'map1',
-		data: {
-			type: 'Feature',
-			properties: {
-				id: 2,
-				Place: 'Palatine hill',
-				Description:
-					'After visiting the Colosseum, admire the mesmerizing Palatine ruins . Roam the stunning Palatine hill, one of the most ancient parts of the city and the most central of the Seven Hills of Rome.',
-				Photo:
-					'https://wheretogoin.net/wp-content/uploads/2015/11/mercati-di-traiano-e1577983310241.jpg',
-				Day: null,
+		data: [
+			{
+				type: 'Feature',
+				properties: {
+					id: 2,
+					Place: 'Palatine hill',
+					Description:
+						'After visiting the Colosseum, admire the mesmerizing Palatine ruins . Roam the stunning Palatine hill, one of the most ancient parts of the city and the most central of the Seven Hills of Rome.',
+					Photo:
+						'https://wheretogoin.net/wp-content/uploads/2015/11/mercati-di-traiano-e1577983310241.jpg',
+				},
+				geometry: {
+					type: 'Point',
+					coordinates: [12.487212272821868, 41.88921331680398],
+				},
 			},
-			geometry: {
-				type: 'Point',
-				coordinates: [12.487212272821868, 41.88921331680398],
-			},
-		},
+		],
 
 		creator: 'user1',
+	},
+	{
+		id: 'map4',
+		data: [
+			{
+				type: 'Feature',
+				properties: {
+					id: 2,
+					Place: 'HELENKA',
+					Description:
+						'After visiting the Colosseum, admire the mesmerizing Palatine ruins . Roam the stunning Palatine hill, one of the most ancient parts of the city and the most central of the Seven Hills of Rome.',
+					Photo:
+						'https://wheretogoin.net/wp-content/uploads/2015/11/mercati-di-traiano-e1577983310241.jpg',
+				},
+				geometry: {
+					type: 'Point',
+					coordinates: [12.487212272821868, 41.88921331680398],
+				},
+			},
+		],
 	},
 ]
 
@@ -54,7 +75,7 @@ const createMap = (req, res) => {
 	// I need to prepare valid geojson structure in the front-end app and then pass it as "places" array
 	const { places } = req.body
 	const createdMap = {
-		id: 'test',
+		id: 'map2',
 		data: places,
 	}
 
@@ -63,6 +84,27 @@ const createMap = (req, res) => {
 	res.status(201).json({ place: createdMap })
 }
 
+const updateMap = (req, res, next) => {
+	const { places } = req.body
+	const mapId = req.params.mapId
+
+	const updatedMap = { ...DEMO_MAPS.find((m) => m.id === mapId) }
+	const mapIndex = DEMO_MAPS.findIndex((m) => m.id === mapId)
+	// updatedMap.place = place
+	// updatedMap.description = description
+
+	places.map((place) => {
+		updatedMap.data.push(place)
+	})
+
+	// updatedMap.data.push(places)
+
+	DEMO_MAPS[mapIndex] = updatedMap
+
+	res.status(200).json({ map: updatedMap })
+}
+
 exports.getMapById = getMapById
 exports.getPlaceByUserId = getPlaceByUserId
 exports.createMap = createMap
+exports.updateMap = updateMap

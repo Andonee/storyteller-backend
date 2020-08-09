@@ -10,4 +10,6 @@ router.get('/user/:userId', mapsController.getPlaceByUserId)
 
 router.post('/', mapsController.createMap)
 
+router.patch('/:mapId', mapsController.updateMap)
+
 module.exports = router
