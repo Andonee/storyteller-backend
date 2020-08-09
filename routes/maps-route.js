@@ -12,4 +12,6 @@ router.post('/', mapsController.createMap)
 
 router.patch('/:mapId', mapsController.updateMap)
 
+router.delete('/:mapId', mapsController.deleteMap)
+
 module.exports = router

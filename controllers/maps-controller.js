@@ -1,6 +1,6 @@
 const HttpError = require('../models/http-error')
 
-const DEMO_MAPS = [
+let DEMO_MAPS = [
 	{
 		id: 'map1',
 		data: [
@@ -84,27 +84,30 @@ const createMap = (req, res) => {
 	res.status(201).json({ place: createdMap })
 }
 
-const updateMap = (req, res, next) => {
+const updateMap = (req, res) => {
 	const { places } = req.body
 	const mapId = req.params.mapId
 
 	const updatedMap = { ...DEMO_MAPS.find((m) => m.id === mapId) }
 	const mapIndex = DEMO_MAPS.findIndex((m) => m.id === mapId)
-	// updatedMap.place = place
-	// updatedMap.description = description
 
 	places.map((place) => {
 		updatedMap.data.push(place)
 	})
-
-	// updatedMap.data.push(places)
 
 	DEMO_MAPS[mapIndex] = updatedMap
 
 	res.status(200).json({ map: updatedMap })
 }
 
+const deleteMap = (req, res) => {
+	const mapId = req.params.mapId
+	DEMO_MAPS = DEMO_MAPS.filter((m) => m.id !== mapId)
+	res.status(200).json({ message: 'Deleted map.' })
+}
+
 exports.getMapById = getMapById
 exports.getPlaceByUserId = getPlaceByUserId
 exports.createMap = createMap
 exports.updateMap = updateMap
+exports.deleteMap = deleteMap
