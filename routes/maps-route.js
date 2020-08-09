@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.get('/:mapId', mapsController.getMapById)
 
-router.get('/user/:userId', mapsController.getPlaceByUserId)
+router.get('/user/:userId', mapsController.getMapsByUserId)
 
 router.post('/', mapsController.createMap)
 

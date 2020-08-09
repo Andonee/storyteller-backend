@@ -42,6 +42,7 @@ let DEMO_MAPS = [
 				},
 			},
 		],
+		creator: 'user1',
 	},
 ]
 
@@ -58,17 +59,17 @@ const getMapById = (req, res, next) => {
 	res.json({ map: map })
 }
 
-const getPlaceByUserId = (req, res, next) => {
+const getMapsByUserId = (req, res, next) => {
 	const userId = req.params.userId
-	const user = DEMO_MAPS.find((u) => {
+	const maps = DEMO_MAPS.filter((u) => {
 		return u.creator === userId
 	})
 
-	if (!user) {
-		return next(new HttpError('Could not find map for privided user id', 404))
+	if (!maps || maps.length === 0) {
+		return next(new HttpError('Could not find maps for privided user id', 404))
 	}
 
-	res.json({ user: user })
+	res.json({ maps: maps })
 }
 
 const createMap = (req, res) => {
@@ -107,7 +108,7 @@ const deleteMap = (req, res) => {
 }
 
 exports.getMapById = getMapById
-exports.getPlaceByUserId = getPlaceByUserId
+exports.getMapsByUserId = getMapsByUserId
 exports.createMap = createMap
 exports.updateMap = updateMap
 exports.deleteMap = deleteMap
