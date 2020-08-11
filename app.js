@@ -1,4 +1,6 @@
 const express = require('express')
+const mongoose = require('mongoose')
+require('dotenv').config()
 
 const mapsRoutes = require('./routes/maps-routes')
 const usersRoutes = require('./routes/users-routes')
@@ -25,4 +27,10 @@ app.use((error, req, res, next) => {
 	res.json({ message: error.message || 'An unknown error occured' })
 })
 
-app.listen(5000)
+mongoose
+	.connect(
+		`mongodb+srv://Andonee:${process.env.MONGO_API_KEY}@cluster0-16jgm.mongodb.net/maps?retryWrites=true&w=majority`,
+		{ useNewUrlParser: true, useUnifiedTopology: true }
+	)
+	.then(() => app.listen(5000))
+	.catch((err) => console.log(err))
