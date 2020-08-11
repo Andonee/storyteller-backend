@@ -2,52 +2,6 @@ const HttpError = require('../models/http-error')
 
 const Map = require('../models/maps')
 
-let DEMO_MAPS = [
-	{
-		id: 'map1',
-		data: [
-			{
-				type: 'Feature',
-				properties: {
-					id: 2,
-					Place: 'Palatine hill',
-					Description:
-						'After visiting the Colosseum, admire the mesmerizing Palatine ruins . Roam the stunning Palatine hill, one of the most ancient parts of the city and the most central of the Seven Hills of Rome.',
-					Photo:
-						'https://wheretogoin.net/wp-content/uploads/2015/11/mercati-di-traiano-e1577983310241.jpg',
-				},
-				geometry: {
-					type: 'Point',
-					coordinates: [12.487212272821868, 41.88921331680398],
-				},
-			},
-		],
-
-		creator: 'user1',
-	},
-	{
-		id: 'map4',
-		data: [
-			{
-				type: 'Feature',
-				properties: {
-					id: 2,
-					Place: 'HELENKA',
-					Description:
-						'After visiting the Colosseum, admire the mesmerizing Palatine ruins . Roam the stunning Palatine hill, one of the most ancient parts of the city and the most central of the Seven Hills of Rome.',
-					Photo:
-						'https://wheretogoin.net/wp-content/uploads/2015/11/mercati-di-traiano-e1577983310241.jpg',
-				},
-				geometry: {
-					type: 'Point',
-					coordinates: [12.487212272821868, 41.88921331680398],
-				},
-			},
-		],
-		creator: 'user1',
-	},
-]
-
 const getMapById = async (req, res, next) => {
 	const mapId = req.params.mapId
 
@@ -89,12 +43,7 @@ const getMapsByUserId = async (req, res, next) => {
 const createMap = async (req, res, next) => {
 	// I need to prepare valid geojson structure in the front-end app and then pass it as "places" array
 	const { places, title, description, owner } = req.body
-	// const createdMap = {
-	// 	id: 'map2',
-	// 	data: places,
-	// 	title,
-	// 	description,
-	// }
+
 	const createdMap = new Map({
 		title, // titile: titile
 		description,
