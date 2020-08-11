@@ -1,5 +1,7 @@
 const HttpError = require('../models/http-error')
 
+const Map = require('../models/maps')
+
 let DEMO_MAPS = [
 	{
 		id: 'map1',
@@ -46,66 +48,116 @@ let DEMO_MAPS = [
 	},
 ]
 
-const getMapById = (req, res, next) => {
+const getMapById = async (req, res, next) => {
 	const mapId = req.params.mapId
-	const map = DEMO_MAPS.find((m) => {
-		return m.id === mapId
-	})
 
+	let map
+
+	try {
+		map = await Map.findById(mapId)
+	} catch (err) {
+		const error = new HttpError('Something went wrong. Try again.', 500)
+		return next(error)
+	}
 	if (!map) {
-		return next(new HttpError('Could not find map for privided id', 404))
+		const error = new HttpError('Could not find map for privided id', 404)
+		return next(error)
 	}
 
-	res.json({ map: map })
+	res.json({ map: map.toObject({ getters: true }) })
 }
 
-const getMapsByUserId = (req, res, next) => {
+const getMapsByUserId = async (req, res, next) => {
 	const userId = req.params.userId
-	const maps = DEMO_MAPS.filter((u) => {
-		return u.creator === userId
-	})
+
+	let maps
+
+	try {
+		maps = await Map.find({ owner: userId })
+	} catch (err) {
+		const error = new HttpError('Something went wrong. Try again', 404)
+		return next(error)
+	}
 
 	if (!maps || maps.length === 0) {
 		return next(new HttpError('Could not find maps for privided user id', 404))
 	}
 
-	res.json({ maps: maps })
+	res.json({ maps: maps.map((map) => map.toObject({ getters: true })) })
 }
 
-const createMap = (req, res) => {
+const createMap = async (req, res, next) => {
 	// I need to prepare valid geojson structure in the front-end app and then pass it as "places" array
-	const { places, title, description } = req.body
-	const createdMap = {
-		id: 'map2',
-		data: places,
-		title,
+	const { places, title, description, owner } = req.body
+	// const createdMap = {
+	// 	id: 'map2',
+	// 	data: places,
+	// 	title,
+	// 	description,
+	// }
+	const createdMap = new Map({
+		title, // titile: titile
 		description,
-	}
+		places,
+		owner,
+	})
 
-	DEMO_MAPS.push(createdMap)
+	try {
+		await createdMap.save()
+	} catch (err) {
+		const error = new HttpError('Creating map failed. Try again.', 500)
+		return next(error)
+	}
 
 	res.status(201).json({ place: createdMap })
 }
 
-const updateMap = (req, res) => {
+const updateMap = async (req, res, next) => {
 	const { places } = req.body
 	const mapId = req.params.mapId
 
-	const updatedMap = { ...DEMO_MAPS.find((m) => m.id === mapId) }
-	const mapIndex = DEMO_MAPS.findIndex((m) => m.id === mapId)
+	let map
+
+	try {
+		map = await Map.findById(mapId)
+	} catch (err) {
+		const error = new HttpError('Something went wrong. Try again', 500)
+		return next(error)
+	}
 
 	places.map((place) => {
-		updatedMap.data.push(place)
+		map.places.push(place)
 	})
 
-	DEMO_MAPS[mapIndex] = updatedMap
+	try {
+		await map.save()
+	} catch (err) {
+		const error = new HttpError('Something went wrong. Try again', 500)
+		return next(error)
+	}
 
-	res.status(200).json({ map: updatedMap })
+	res.status(200).json({ map: map.toObject({ getters: true }) })
 }
 
-const deleteMap = (req, res) => {
+const deleteMap = async (req, res, next) => {
 	const mapId = req.params.mapId
-	DEMO_MAPS = DEMO_MAPS.filter((m) => m.id !== mapId)
+
+	let map
+
+	try {
+		map = await Map.findById(mapId)
+	} catch (err) {
+		const error = new HttpError('Something went wrong. Try again', 500)
+		return next(error)
+	}
+
+	try {
+		await map.remove()
+	} catch (err) {
+		const error = new HttpError('Something went wrong. Try again', 500)
+		return next(error)
+	}
+
 	res.status(200).json({ message: 'Deleted map.' })
 }
 

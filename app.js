@@ -6,6 +6,8 @@ const mapsRoutes = require('./routes/maps-routes')
 const usersRoutes = require('./routes/users-routes')
 const HttpError = require('./models/http-error')
 
+require('dotenv').config()
+
 const app = express()
 
 app.use(express.json())
@@ -29,7 +31,7 @@ app.use((error, req, res, next) => {
 
 mongoose
 	.connect(
-		`mongodb+srv://Andonee:${process.env.MONGO_API_KEY}@cluster0-16jgm.mongodb.net/maps?retryWrites=true&w=majority`,
+		`mongodb+srv://Andonee:${process.env.MONGO_API_KEY}@cluster0.aaqlo.mongodb.net/maps?retryWrites=true&w=majority`,
 		{ useNewUrlParser: true, useUnifiedTopology: true }
 	)
 	.then(() => app.listen(5000))
