@@ -1,17 +1,16 @@
 const HttpError = require('../models/http-error')
 const User = require('../models/user')
 
-const DUMMY_USERS = [
-	{
-		id: 'u1',
-		name: 'John Doe',
-		email: 'john@doe.com',
-		password: 'test123',
-	},
-]
+const getUsers = async (req, res, next) => {
+	let users
 
-const getUsers = (req, res) => {
-	res.json({ users: DUMMY_USERS })
+	try {
+		users = await User.find({}, 'email name') // Which fields I want to get in response
+	} catch (err) {
+		const error = new HttpError('Getting users failed. Try again', 500)
+		return next(error)
+	}
+	res.json({ users: users.map((user) => user.toObject({ getters: true })) })
 }
 
 const signup = async (req, res, next) => {
