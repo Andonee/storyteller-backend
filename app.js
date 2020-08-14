@@ -32,7 +32,7 @@ app.use((error, req, res, next) => {
 mongoose
 	.connect(
 		`mongodb+srv://Andonee:${process.env.MONGO_API_KEY}@cluster0.aaqlo.mongodb.net/maps?retryWrites=true&w=majority`,
-		{ useNewUrlParser: true, useUnifiedTopology: true }
+		{ useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
 	)
 	.then(() => app.listen(5000))
 	.catch((err) => console.log(err))
