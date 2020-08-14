@@ -1,6 +1,6 @@
 const HttpError = require('../models/http-error')
 
-const Map = require('../models/maps')
+const Map = require('../models/map')
 
 const getMapById = async (req, res, next) => {
 	const mapId = req.params.mapId

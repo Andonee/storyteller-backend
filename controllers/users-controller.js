@@ -1,4 +1,5 @@
 const HttpError = require('../models/http-error')
+const User = require('../models/user')
 
 const DUMMY_USERS = [
 	{
@@ -13,25 +14,41 @@ const getUsers = (req, res) => {
 	res.json({ users: DUMMY_USERS })
 }
 
-const signup = (req, res) => {
-	const { name, email, password } = req.body
+const signup = async (req, res, next) => {
+	const { name, email, password, maps, image } = req.body
 
-	const hasUser = DUMMY_USERS.find((u) => u.email === email)
-
-	if (hasUser) {
-		throw new HttpError('Email is already used.', 422)
+	let userExist
+	try {
+		userExist = await User.findOne({ email: email })
+	} catch (err) {
+		const error = new HttpError('Signing up failed. Try again', 500)
+		return next(error)
 	}
 
-	const createdUser = {
-		id: Math.floor(Math.random() * 100000),
+	if (userExist) {
+		const error = new HttpError(
+			'The e-mail address is already taken. Please choose another one.',
+			422
+		)
+		return next(error)
+	}
+
+	const createdUser = new User({
 		name,
 		email,
 		password,
+		image: 'https://randomuser.me/api/portraits/men/55.jpg',
+		maps,
+	})
+
+	try {
+		await createdUser.save()
+	} catch (err) {
+		const error = new HttpError('Signing up failed. Try again.', 500)
+		return next(error)
 	}
 
-	DUMMY_USERS.push(createdUser)
-
-	res.status(201).json({ user: createdUser })
+	res.status(201).json({ user: createdUser.toObject({ getters: true }) })
 }
 
 const login = (req, res, next) => {
