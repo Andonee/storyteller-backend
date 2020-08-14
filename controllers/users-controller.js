@@ -14,7 +14,7 @@ const getUsers = async (req, res, next) => {
 }
 
 const signup = async (req, res, next) => {
-	const { name, email, password, maps, image } = req.body
+	const { name, email, password, image } = req.body
 
 	let userExist
 	try {
@@ -37,7 +37,7 @@ const signup = async (req, res, next) => {
 		email,
 		password,
 		image: 'https://randomuser.me/api/portraits/men/55.jpg',
-		maps,
+		maps: [],
 	})
 
 	try {

@@ -1,6 +1,8 @@
+const mongoose = require('mongoose')
 const HttpError = require('../models/http-error')
 
 const Map = require('../models/map')
+const User = require('../models/user')
 
 const getMapById = async (req, res, next) => {
 	const mapId = req.params.mapId
@@ -51,8 +53,28 @@ const createMap = async (req, res, next) => {
 		owner,
 	})
 
+	let user
+
 	try {
-		await createdMap.save()
+		user = await User.findById(owner)
+	} catch (err) {
+		const error = new HttpError('Creating map failed. Try again', 500)
+		return next(error)
+	}
+
+	if (!user) {
+		const error = new HttpError('There is no user with provided id.', 404)
+		return next(error)
+	}
+
+	try {
+		const session = await mongoose.startSession()
+		session.startTransaction()
+		await createdMap.save({ session: session })
+		user.maps.push(createdMap)
+		await user.save({ session: session })
+		// If everything above goes fine in this place changes are save
+		await session.commitTransaction()
 	} catch (err) {
 		const error = new HttpError('Creating map failed. Try again.', 500)
 		return next(error)
@@ -94,14 +116,27 @@ const deleteMap = async (req, res, next) => {
 	let map
 
 	try {
-		map = await Map.findById(mapId)
+		map = await Map.findById(mapId).populate('owner')
 	} catch (err) {
 		const error = new HttpError('Something went wrong. Try again', 500)
 		return next(error)
 	}
 
+	if (!map) {
+		const error = new HttpError(
+			'Could not find map for this id. Try again',
+			404
+		)
+		return next(error)
+	}
+
 	try {
-		await map.remove()
+		const session = await mongoose.startSession()
+		session.startTransaction()
+		await map.remove({ session: session })
+		map.owner.maps.pull(map)
+		await map.owner.save({ session: session })
+		await session.commitTransaction()
 	} catch (err) {
 		const error = new HttpError('Something went wrong. Try again', 500)
 		return next(error)
