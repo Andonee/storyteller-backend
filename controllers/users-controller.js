@@ -5,7 +5,7 @@ const getUsers = async (req, res, next) => {
 	let users
 
 	try {
-		users = await User.find({}, 'email name') // Which fields I want to get in response
+		users = await User.find({}, 'email name id image maps') // Which fields I want to get in response
 	} catch (err) {
 		const error = new HttpError('Getting users failed. Try again', 500)
 		return next(error)
@@ -66,7 +66,10 @@ const login = async (req, res, next) => {
 		return next(error)
 	}
 
-	res.json({ message: 'Logged in' })
+	res.json({
+		message: 'Logged in',
+		user: userExist.toObject({ getters: true }),
+	})
 }
 
 exports.getUsers = getUsers
